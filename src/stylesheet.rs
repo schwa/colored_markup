@@ -12,29 +12,22 @@ pub struct StyleSheet<'a> {
     styles: HashMap<&'a str, Style>,
 }
 
-impl<'a> Default for StyleSheet<'a> {
-    fn default() -> StyleSheet<'a> {
-        let styles = vec![
-            ("bold", Style::new(Some(vec![Styles::Bold]), None, None)),
-            ("em", Style::new(Some(vec![Styles::Italic]), None, None)),
-            (
-                "strikethrough",
-                Style::new(Some(vec![Styles::Strikethrough]), None, None),
-            ),
-        ];
-        StyleSheet::new_internal(&styles)
-    }
-}
+// impl<'a> Default for StyleSheet<'a> {
+//     fn default() -> StyleSheet<'a> {
+//         let styles = vec![
+//             ("bold", Style::new(Some(vec![Styles::Bold]), None, None)),
+//             ("em", Style::new(Some(vec![Styles::Italic]), None, None)),
+//             (
+//                 "strikethrough",
+//                 Style::new(Some(vec![Styles::Strikethrough]), None, None),
+//             ),
+//         ];
+//         StyleSheet::new_internal(&styles)
+//     }
+// }
 
 impl<'a> StyleSheet<'a> {
-    pub fn new(
-        styles: &[(
-            &'a str,
-            Vec<Styles>,
-            Option<colored::Color>,
-            Option<colored::Color>,
-        )],
-    ) -> StyleSheet<'a> {
+    pub fn new(styles: &[(&'a str, Vec<Styles>, Option<Color>, Option<Color>)]) -> StyleSheet<'a> {
         let styles = styles.iter().map(|(name, styles, foreground, background)| {
             let style = Style::new(Some(styles.clone()), *foreground, *background);
             (*name, style)
@@ -42,6 +35,13 @@ impl<'a> StyleSheet<'a> {
         let styles = HashMap::from_iter(styles);
         StyleSheet { styles }
     }
+}
+
+#[test]
+fn test_stylesheet_new() {
+    let styles = vec![("alert", vec![Styles::Bold], Some(Color::Red), None)];
+    let expectation = StyleSheet::new(&styles);
+    assert_eq!(StyleSheet::new(&styles), expectation);
 }
 
 impl<'a> StyleSheet<'a> {
@@ -60,7 +60,7 @@ impl<'a> StyleSheet<'a> {
 
 #[test]
 fn test_stylesheet() {
-    let styles = vec![("alert", Style::new(None, Some(colored::Color::Red), None))];
+    let styles = vec![("alert", Style::new(None, Some(Color::Red), None))];
     let expectation = StyleSheet::new_internal(&styles);
     assert_eq!(
         StyleSheet::parse("alert{foreground:red}").unwrap(),
@@ -69,23 +69,18 @@ fn test_stylesheet() {
 }
 
 impl<'a> StyleSheet<'a> {
-    pub fn render(&self, markup: &str) -> Result<String> {
-        let parts = parse_markup(markup)?;
-
+    pub(crate) fn render_to_colored_string(&self, markup: &str) -> Result<Vec<ColoredString>> {
+        let parts = Markup::parse(markup)?.parts;
         let mut style_stack: Vec<Style> = Vec::new();
-
         let mut colored_strings: Vec<colored::ColoredString> = Vec::new();
-
         for part in parts {
             match part {
                 Part::Text(text) => {
                     let style = Style::resolve(&style_stack);
                     let mut text = ColoredString::from(text);
-
                     for style in style.styles {
                         text = style.apply(text);
                     }
-
                     if let Some(color) = style.foreground {
                         text = text.color(color);
                     }
@@ -104,11 +99,15 @@ impl<'a> StyleSheet<'a> {
                 Part::CloseTag(_) => {
                     style_stack
                         .pop()
-                        .ok_or_else(|| anyhow!("Invalid template"))?; // TODO: error
+                        .ok_or_else(|| anyhow!("Invalid template"))?;
                 }
             }
         }
+        Ok(colored_strings)
+    }
 
+    pub fn render(&self, markup: &str) -> Result<String> {
+        let colored_strings = self.render_to_colored_string(markup)?;
         let mut result = String::new();
         for colored_string in colored_strings {
             let f = format!("{}", colored_string);

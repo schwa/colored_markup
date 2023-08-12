@@ -3,7 +3,8 @@ name = "colored_markup"
 version = "0.1.0"
 edition = "2021"
 description = "A library for parsing and rendering colored markup with CSS style rules."
-license-file = "LICENSE"
+license-file = "LICENSE.txt"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

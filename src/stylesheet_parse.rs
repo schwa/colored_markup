@@ -111,7 +111,7 @@ fn test_wrapped_declarations() {
 
 fn declarations(s: &str) -> IResult<&str, Style> {
     map(separated_list0(char(';'), declaration), |decls| {
-        let mut result = Style::empty();
+        let mut result = Style::default();
         for style in decls {
             result = result.merge(style);
         }

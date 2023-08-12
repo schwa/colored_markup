@@ -1,9 +1,12 @@
-use colored_markup::*;
+use colored_markup::{println_markup, Color, StyleSheet, Styled, Styles};
 
 fn main() {
     let style_sheet =
         StyleSheet::parse("red { foreground: bright-red; styles: underline }").unwrap();
-    println_markup!(&style_sheet, "The next word is <red>red</red>");
+
+    println!("{}", "Red ones go <red>faster</red>".styled(&style_sheet));
+
+    println_markup!(&style_sheet, "The next word is <red>{}</red>", "red");
 
     let style_sheet = StyleSheet::new(&[
         (
