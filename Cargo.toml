@@ -5,6 +5,12 @@ edition = "2021"
 description = "A library for parsing and rendering colored markup with CSS style rules."
 license-file = "LICENSE.txt"
 publish = false
+authors = ["Jonathan Wight <schwa@schwa.io>"]
+homepage = "https://github.com/schwa/colored_markup"
+repository = "https://github.com/schwa/colored_markup."
+keywords = ["markup", "css", "color", "terminal", "ansi"]
+readme = "README.md"
+categories = ["text-processing", "parsing", "terminal"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
