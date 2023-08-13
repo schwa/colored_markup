@@ -12,11 +12,11 @@ let style_sheet =
 println_markup!(&style_sheet, "The next word is <red>{}</red>", "red");
 ```
 
-See [`examples`](examples) for more.
+See [`examples`](https://github.com/schwa/colored_markup/tree/main/examples) for more.
 
 ## License
 
-MIT. See [`LICENSE.txt`](LICENSE.txt) for details.
+MIT. See [`LICENSE.txt`](https://github.com/schwa/colored_markup/blob/main/LICENSE.txt) for details.
 
 ## TODO
 
@@ -26,3 +26,4 @@ MIT. See [`LICENSE.txt`](LICENSE.txt) for details.
 * CLI tool.
 * Better documentation.
 * Get rid of re-exports?
+* Replace regex with Nom.
