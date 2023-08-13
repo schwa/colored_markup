@@ -1,11 +1,14 @@
-pub mod markup;
+//! colored_markup is a library for rendering HTML-like markup with ANSI escape codes using CSS-like stylesheets.
+
+mod markup;
 pub mod styles;
 pub mod stylesheet;
 mod stylesheet_parse;
 
-pub use styles::*;
-pub use stylesheet::*;
+use styles::*;
+use stylesheet::*;
 
+/// A macro to format a string with markup.
 #[macro_export]
 macro_rules! format_markup {
     ($stylesheet:expr, $($arg:tt)*) => {{
@@ -22,6 +25,7 @@ fn test_format_markup() {
     assert_eq!(result, "Mode: \u{1b}[31mmode\u{1b}[0m");
 }
 
+/// A macro to print a string with markup.
 #[macro_export]
 macro_rules! println_markup {
     ($stylesheet:expr, $($arg:tt)*) => {{
@@ -29,6 +33,7 @@ macro_rules! println_markup {
     }};
 }
 
+/// A macro to print a string to stderr with markup.
 #[macro_export]
 macro_rules! eprintln_markup {
     ($stylesheet:expr, $($arg:tt)*) => {{
@@ -36,7 +41,9 @@ macro_rules! eprintln_markup {
     }};
 }
 
+/// A trait for rendering markup.
 pub trait Styled {
+    /// Render the string with the given stylesheet.
     fn styled(&self, stylesheet: &StyleSheet) -> String;
 }
 

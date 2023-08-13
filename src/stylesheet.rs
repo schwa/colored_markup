@@ -7,6 +7,7 @@ use crate::markup::*;
 use crate::styles::*;
 use crate::stylesheet_parse::parse;
 
+/// A struct representing styles to apply to markup.
 #[derive(Debug, PartialEq)]
 pub struct StyleSheet<'a> {
     styles: HashMap<&'a str, Style>,
@@ -27,6 +28,7 @@ pub struct StyleSheet<'a> {
 // }
 
 impl<'a> StyleSheet<'a> {
+    /// Create a new `StyleSheet` from a list of style names, styles, foreground and background colors.
     pub fn new(styles: &[(&'a str, Vec<Styles>, Option<Color>, Option<Color>)]) -> StyleSheet<'a> {
         let styles = styles.iter().map(|(name, styles, foreground, background)| {
             let style = Style::new(Some(styles.clone()), *foreground, *background);
@@ -52,6 +54,7 @@ impl<'a> StyleSheet<'a> {
 }
 
 impl<'a> StyleSheet<'a> {
+    /// Parse a stylesheet from a string.
     pub fn parse(s: &'a str) -> Result<StyleSheet<'a>> {
         let rules = parse(s)?;
         Ok(StyleSheet::new_internal(&rules))

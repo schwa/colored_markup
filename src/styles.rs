@@ -1,5 +1,6 @@
 use colored::Colorize;
 
+/// A representation of a terminal color.
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Color {
     Black,
@@ -45,6 +46,7 @@ impl From<Color> for colored::Color {
     }
 }
 
+/// A representation of a terminal style.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum Styles {
     Bold,

@@ -1,4 +1,9 @@
-use colored_markup::{println_markup, Color, StyleSheet, Styled, Styles};
+use colored_markup::{
+    println_markup,
+    styles::{Color, Styles},
+    stylesheet::StyleSheet,
+    Styled,
+};
 
 fn main() {
     let style_sheet =
