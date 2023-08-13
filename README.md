@@ -20,6 +20,9 @@ MIT. See [`LICENSE.txt`](LICENSE.txt) for details.
 
 ## TODO
 
-* RGB colour codes.
+* RGB colour codes in CSS.
 * Better CSS parsing error handling.
 * Allow changing markup characters.
+* CLI tool.
+* Better documentation.
+* Get rid of re-exports?

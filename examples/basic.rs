@@ -11,8 +11,6 @@ fn main() {
 
     println!("{}", "Red ones go <red>faster</red>".styled(&style_sheet));
 
-    println_markup!(&style_sheet, "The next word is <red>{}</red>", "red");
-
     let style_sheet = StyleSheet::new(&[
         (
             "red",
