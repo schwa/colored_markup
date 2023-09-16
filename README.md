@@ -20,10 +20,10 @@ MIT. See [`LICENSE.txt`](https://github.com/schwa/colored_markup/blob/main/LICEN
 
 ## TODO
 
-* RGB colour codes in CSS.
-* Better CSS parsing error handling.
-* Allow changing markup characters.
-* CLI tool.
-* Better documentation.
-* Get rid of re-exports?
-* Replace regex with Nom.
+* [ ] RGB colour codes in CSS.
+* [ ] Better CSS parsing error handling.
+* [ ] Allow changing markup characters.
+* [ ] CLI tool.
+* [ ] Better documentation.
+* [ ] Get rid of re-exports?
+* [ ] Replace regex with Nom.
