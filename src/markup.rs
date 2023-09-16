@@ -95,3 +95,41 @@ fn test_negative() {
     assert!(!Markup::parse("</oops>").unwrap().is_valid());
     assert!(!Markup::parse("<foo></bar>").unwrap().is_valid());
 }
+
+#[allow(unused_imports)]
+use nom::{
+    branch::alt,
+    bytes::complete::{is_not, tag},
+    character::complete::{alpha1, char, multispace0},
+    combinator::{map, opt, value},
+    error::ParseError,
+    multi::{many0, many1, separated_list0},
+    sequence::{delimited, tuple},
+    IResult, Parser,
+};
+
+fn parse_open_tag<'a>(input: &'a str) -> IResult<&'a str, Part> {
+    map(
+        delimited(char('<'), alpha1, tuple((multispace0, char('>')))),
+        |tag| Part::OpenTag(tag),
+    )(input)
+}
+
+fn parse_close_tag<'a>(input: &'a str) -> IResult<&'a str, Part> {
+    map(
+        delimited(tag("</"), alpha1, tuple((multispace0, char('>')))),
+        |tag| Part::OpenTag(tag),
+    )(input)
+}
+
+fn parse_text<'a>(input: &'a str) -> IResult<&'a str, Part> {
+    map(is_not("<"), |text| Part::Text(text))(input)
+}
+
+fn parse_tagged<'a>(input: &'a str) -> IResult<&'a str, Part> {
+    alt((parse_open_tag, parse_close_tag, parse_text))(input)
+}
+
+// fn parse_text(input: &str) -> IResult<&str, &str> {
+//     many1(alt((alpha1, multispace0)))(input)
+// }
