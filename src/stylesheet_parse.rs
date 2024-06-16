@@ -113,7 +113,7 @@ fn declarations(s: &str) -> IResult<&str, Style> {
     map(separated_list0(char(';'), declaration), |decls| {
         let mut result = Style::default();
         for style in decls {
-            result = result.merge(style);
+            result = result.merge(&style);
         }
         result
     })(s)
@@ -154,7 +154,7 @@ fn color_style_declaration(s: &str) -> IResult<&str, Style> {
 fn styles_style_declaration(s: &str) -> IResult<&str, Style> {
     map(
         tuple((ws(tag("styles")), char(':'), many1(ws(attributes)))),
-        |(_, _, attributes)| Style::new(Some(Attributes::from_vec(attributes)), None, None),
+        |(_, _, attributes)| Style::new(Some(Attributes::from(&attributes)), None, None),
     )(s)
 }
 

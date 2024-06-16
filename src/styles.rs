@@ -82,12 +82,11 @@ impl Attributes {
     }
 }
 
-impl Attributes {
-    // TODO: use correct from trait.
-    pub(crate) fn from_vec(attributes: Vec<Attributes>) -> Attributes {
+impl From<&Vec<Attributes>> for Attributes {
+    fn from(attributes: &Vec<Attributes>) -> Self {
         let mut result = Attributes::default();
         for style in attributes {
-            result |= style;
+            result |= *style;
         }
         result
     }
@@ -128,7 +127,7 @@ impl Style {
         }
     }
 
-    pub(crate) fn merge(&self, other: Style) -> Style {
+    pub(crate) fn merge(&self, other: &Style) -> Style {
         let mut attributes = self.attributes;
         attributes.extend(other.attributes);
         Style {
