@@ -3,10 +3,13 @@ use anyhow::Result;
 use nom::{
     branch::alt,
     bytes::complete::tag,
-    character::complete::{alpha1, char, multispace0},
+    character::complete::{alpha1, alphanumeric0, alphanumeric1, char, multispace0},
+    combinator::recognize,
     combinator::{map, opt, value},
     error::ParseError,
+    multi::many0_count,
     multi::{many0, many1, separated_list0},
+    sequence::pair,
     sequence::{delimited, tuple},
     IResult, Parser,
 };
@@ -78,8 +81,8 @@ fn test_rule() {
     );
 }
 
-fn selector(s: &str) -> IResult<&str, &str> {
-    alpha1(s)
+fn selector(input: &str) -> IResult<&str, &str> {
+    recognize(pair(alpha1, many0_count(alt((alphanumeric1, tag("-"))))))(input)
 }
 
 fn wrapped_declarations(s: &str) -> IResult<&str, Style> {
