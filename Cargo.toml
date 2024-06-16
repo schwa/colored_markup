@@ -21,7 +21,9 @@ name = "colored_markup"
 
 [dependencies]
 anyhow = "1.0.72"
+assert_cmd = "2.0.14"
 bitflags = "2.5.0"
+clap = { version = "4.5.7", features = ["derive"] }
 colored = "2.0.4"
 lazy_static = "1.4.0"
 nom = "7.1.3"

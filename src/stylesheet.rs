@@ -10,7 +10,7 @@ use crate::stylesheet_parse::parse;
 /// A struct representing styles to apply to markup.
 #[derive(Debug, PartialEq)]
 pub struct StyleSheet<'a> {
-    styles: HashMap<&'a str, Style>,
+    pub styles: HashMap<&'a str, Style>,
 }
 
 impl<'a> StyleSheet<'a> {

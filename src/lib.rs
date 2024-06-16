@@ -9,6 +9,7 @@
 mod markup;
 pub mod styles;
 pub mod stylesheet;
+mod stylesheet_fmt;
 mod stylesheet_parse;
 
 use styles::*;

@@ -48,7 +48,6 @@ impl From<Color> for colored::Color {
 
 use bitflags::bitflags;
 
-
 /// A representation of a terminal style attribute.
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, Default)]
 pub struct Attributes(u8);
@@ -96,8 +95,14 @@ impl From<&Vec<Attributes>> for Attributes {
 fn test_attributes() {
     assert_eq!(Attributes::Bold.apply("hello".into()), "hello".bold());
     assert_eq!(Attributes::Dimmed.apply("hello".into()), "hello".dimmed());
-    assert_eq!(Attributes::Underline.apply("hello".into()), "hello".underline());
-    assert_eq!(Attributes::Reversed.apply("hello".into()), "hello".reversed());
+    assert_eq!(
+        Attributes::Underline.apply("hello".into()),
+        "hello".underline()
+    );
+    assert_eq!(
+        Attributes::Reversed.apply("hello".into()),
+        "hello".reversed()
+    );
     assert_eq!(Attributes::Italic.apply("hello".into()), "hello".italic());
     assert_eq!(Attributes::Blink.apply("hello".into()), "hello".blink());
     assert_eq!(Attributes::Hidden.apply("hello".into()), "hello".hidden());
@@ -108,14 +113,14 @@ fn test_attributes() {
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
-pub(crate) struct Style {
-    pub(crate) attributes: Attributes,
-    pub(crate) foreground: Option<Color>,
-    pub(crate) background: Option<Color>,
+pub struct Style {
+    pub attributes: Attributes,
+    pub foreground: Option<Color>,
+    pub background: Option<Color>,
 }
 
 impl Style {
-    pub(crate) fn new(
+    pub fn new(
         attributes: Option<Attributes>,
         foreground: Option<Color>,
         background: Option<Color>,
