@@ -46,86 +46,105 @@ impl From<Color> for colored::Color {
     }
 }
 
-/// A representation of a terminal style.
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
-pub enum Styles {
-    Bold,
-    Dimmed,
-    Underline,
-    Reversed,
-    Italic,
-    Blink,
-    Hidden,
-    Strikethrough,
+use bitflags::bitflags;
+
+
+/// A representation of a terminal style attribute.
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash, Default)]
+pub struct Attributes(u8);
+
+bitflags! {
+    impl Attributes: u8 {
+        const Bold =          0b00000001;
+        const Dimmed =        0b00000010;
+        const Underline =     0b00000100;
+        const Reversed =      0b00001000;
+        const Italic =        0b00010000;
+        const Blink =         0b00100000;
+        const Hidden =        0b01000000;
+        const Strikethrough = 0b10000000;
+    }
 }
 
-impl Styles {
-    pub(crate) fn apply(&self, s: colored::ColoredString) -> colored::ColoredString {
+impl Attributes {
+    pub(crate) fn apply(self, s: colored::ColoredString) -> colored::ColoredString {
         match self {
-            Styles::Bold => s.bold(),
-            Styles::Dimmed => s.dimmed(),
-            Styles::Underline => s.underline(),
-            Styles::Reversed => s.reversed(),
-            Styles::Italic => s.italic(),
-            Styles::Blink => s.blink(),
-            Styles::Hidden => s.hidden(),
-            Styles::Strikethrough => s.strikethrough(),
+            Attributes::Bold => s.bold(),
+            Attributes::Dimmed => s.dimmed(),
+            Attributes::Underline => s.underline(),
+            Attributes::Reversed => s.reversed(),
+            Attributes::Italic => s.italic(),
+            Attributes::Blink => s.blink(),
+            Attributes::Hidden => s.hidden(),
+            Attributes::Strikethrough => s.strikethrough(),
+            _ => s,
         }
     }
 }
 
+impl Attributes {
+    // TODO: use correct from trait.
+    pub(crate) fn from_vec(attributes: Vec<Attributes>) -> Attributes {
+        let mut result = Attributes::default();
+        for style in attributes {
+            result |= style;
+        }
+        result
+    }
+}
+
 #[test]
-fn test_styles() {
-    assert_eq!(Styles::Bold.apply("hello".into()), "hello".bold());
-    assert_eq!(Styles::Dimmed.apply("hello".into()), "hello".dimmed());
-    assert_eq!(Styles::Underline.apply("hello".into()), "hello".underline());
-    assert_eq!(Styles::Reversed.apply("hello".into()), "hello".reversed());
-    assert_eq!(Styles::Italic.apply("hello".into()), "hello".italic());
-    assert_eq!(Styles::Blink.apply("hello".into()), "hello".blink());
-    assert_eq!(Styles::Hidden.apply("hello".into()), "hello".hidden());
+fn test_attributes() {
+    assert_eq!(Attributes::Bold.apply("hello".into()), "hello".bold());
+    assert_eq!(Attributes::Dimmed.apply("hello".into()), "hello".dimmed());
+    assert_eq!(Attributes::Underline.apply("hello".into()), "hello".underline());
+    assert_eq!(Attributes::Reversed.apply("hello".into()), "hello".reversed());
+    assert_eq!(Attributes::Italic.apply("hello".into()), "hello".italic());
+    assert_eq!(Attributes::Blink.apply("hello".into()), "hello".blink());
+    assert_eq!(Attributes::Hidden.apply("hello".into()), "hello".hidden());
     assert_eq!(
-        Styles::Strikethrough.apply("hello".into()),
+        Attributes::Strikethrough.apply("hello".into()),
         "hello".strikethrough()
     );
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub(crate) struct Style {
-    pub(crate) styles: Vec<Styles>, // TODO: Hashset
+    pub(crate) attributes: Attributes,
     pub(crate) foreground: Option<Color>,
     pub(crate) background: Option<Color>,
 }
 
 impl Style {
     pub(crate) fn new(
-        styles: Option<Vec<Styles>>,
+        attributes: Option<Attributes>,
         foreground: Option<Color>,
         background: Option<Color>,
     ) -> Style {
         Style {
-            styles: styles.unwrap_or_default(),
+            attributes: attributes.unwrap_or_default(),
             foreground,
             background,
         }
     }
 
     pub(crate) fn merge(&self, other: Style) -> Style {
-        let mut styles = self.styles.clone();
-        styles.extend(other.styles);
+        let mut attributes = self.attributes;
+        attributes.extend(other.attributes);
         Style {
-            styles,
+            attributes,
             foreground: other.foreground.or(self.foreground),
             background: other.background.or(self.background),
         }
     }
 
     pub(crate) fn resolve(stack: &Vec<Style>) -> Style {
-        let mut styles: Vec<Styles> = Vec::new();
+        let mut attributes: Attributes = Attributes::default();
         let mut foreground: Option<Color> = None;
         let mut background: Option<Color> = None;
 
         for style in stack {
-            styles.extend(style.styles.iter());
+            attributes.extend(style.attributes.iter());
             if style.foreground.is_some() {
                 foreground = style.foreground;
             }
@@ -134,7 +153,7 @@ impl Style {
             }
         }
         Style {
-            styles,
+            attributes,
             foreground,
             background,
         }

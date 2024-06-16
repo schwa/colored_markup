@@ -13,25 +13,11 @@ pub struct StyleSheet<'a> {
     styles: HashMap<&'a str, Style>,
 }
 
-// impl<'a> Default for StyleSheet<'a> {
-//     fn default() -> StyleSheet<'a> {
-//         let styles = vec![
-//             ("bold", Style::new(Some(vec![Styles::Bold]), None, None)),
-//             ("em", Style::new(Some(vec![Styles::Italic]), None, None)),
-//             (
-//                 "strikethrough",
-//                 Style::new(Some(vec![Styles::Strikethrough]), None, None),
-//             ),
-//         ];
-//         StyleSheet::new_internal(&styles)
-//     }
-// }
-
 impl<'a> StyleSheet<'a> {
     /// Create a new `StyleSheet` from a list of style names, styles, foreground and background colors.
-    pub fn new(styles: &[(&'a str, Vec<Styles>, Option<Color>, Option<Color>)]) -> StyleSheet<'a> {
+    pub fn new(styles: &[(&'a str, Attributes, Option<Color>, Option<Color>)]) -> StyleSheet<'a> {
         let styles = styles.iter().map(|(name, styles, foreground, background)| {
-            let style = Style::new(Some(styles.clone()), *foreground, *background);
+            let style = Style::new(Some(*styles), *foreground, *background);
             (*name, style)
         });
         let styles = HashMap::from_iter(styles);
@@ -41,7 +27,7 @@ impl<'a> StyleSheet<'a> {
 
 #[test]
 fn test_stylesheet_new() {
-    let styles = vec![("alert", vec![Styles::Bold], Some(Color::Red), None)];
+    let styles = vec![("alert", Attributes::Bold, Some(Color::Red), None)];
     let expectation = StyleSheet::new(&styles);
     assert_eq!(StyleSheet::new(&styles), expectation);
 }
@@ -81,7 +67,7 @@ impl<'a> StyleSheet<'a> {
                 Part::Text(text) => {
                     let style = Style::resolve(&style_stack);
                     let mut text = ColoredString::from(text);
-                    for style in style.styles {
+                    for style in style.attributes {
                         text = style.apply(text);
                     }
                     if let Some(color) = style.foreground {

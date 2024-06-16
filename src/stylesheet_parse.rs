@@ -99,13 +99,13 @@ fn test_wrapped_declarations() {
         wrapped_declarations("{ foreground: red; styles: bold }")
             .unwrap()
             .1,
-        Style::new(Some(vec![Styles::Bold]), Some(Color::Red), None)
+        Style::new(Some(Attributes::Bold), Some(Color::Red), None)
     );
     assert_eq!(
         wrapped_declarations("{ foreground: red; styles: bold }")
             .unwrap()
             .1,
-        Style::new(Some(vec![Styles::Bold]), Some(Color::Red), None)
+        Style::new(Some(Attributes::Bold), Some(Color::Red), None)
     );
 }
 
@@ -131,11 +131,11 @@ fn test_declaration() {
     );
     assert_eq!(
         styles_style_declaration("styles : bold").unwrap().1,
-        Style::new(Some(vec![Styles::Bold]), None, None)
+        Style::new(Some(Attributes::Bold), None, None)
     );
     assert_eq!(
         styles_style_declaration("styles : bold dimmed").unwrap().1,
-        Style::new(Some(vec![Styles::Bold, Styles::Dimmed]), None, None)
+        Style::new(Some(Attributes::Bold | Attributes::Dimmed), None, None)
     );
 }
 
@@ -153,27 +153,27 @@ fn color_style_declaration(s: &str) -> IResult<&str, Style> {
 
 fn styles_style_declaration(s: &str) -> IResult<&str, Style> {
     map(
-        tuple((ws(tag("styles")), char(':'), many1(ws(styles)))),
-        |(_, _, styles)| Style::new(Some(styles), None, None),
+        tuple((ws(tag("styles")), char(':'), many1(ws(attributes)))),
+        |(_, _, attributes)| Style::new(Some(Attributes::from_vec(attributes)), None, None),
     )(s)
 }
 
-fn styles(s: &str) -> IResult<&str, Styles> {
+fn attributes(s: &str) -> IResult<&str, Attributes> {
     alt((
-        value(Styles::Bold, tag("bold")),
-        value(Styles::Dimmed, tag("dimmed")),
-        value(Styles::Underline, tag("underline")),
-        value(Styles::Reversed, tag("reversed")),
-        value(Styles::Italic, tag("italic")),
-        value(Styles::Blink, tag("blink")),
-        value(Styles::Hidden, tag("hidden")),
-        value(Styles::Strikethrough, tag("strikethrough")),
+        value(Attributes::Bold, tag("bold")),
+        value(Attributes::Dimmed, tag("dimmed")),
+        value(Attributes::Underline, tag("underline")),
+        value(Attributes::Reversed, tag("reversed")),
+        value(Attributes::Italic, tag("italic")),
+        value(Attributes::Blink, tag("blink")),
+        value(Attributes::Hidden, tag("hidden")),
+        value(Attributes::Strikethrough, tag("strikethrough")),
     ))(s)
 }
 #[test]
-fn test_styles() {
-    assert_eq!(styles("bold").unwrap().1, Styles::Bold);
-    assert!(styles("invalid").is_err());
+fn test_attributes() {
+    assert_eq!(attributes("bold").unwrap().1, Attributes::Bold);
+    assert!(attributes("invalid").is_err());
 }
 
 fn color(s: &str) -> IResult<&str, Color> {

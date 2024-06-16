@@ -21,6 +21,7 @@ name = "colored_markup"
 
 [dependencies]
 anyhow = "1.0.72"
+bitflags = "2.5.0"
 colored = "2.0.4"
 lazy_static = "1.4.0"
 nom = "7.1.3"

@@ -1,6 +1,6 @@
 use colored_markup::{
     println_markup,
-    styles::{Color, Styles},
+    styles::{Attributes, Color},
     stylesheet::StyleSheet,
     Styled,
 };
@@ -14,12 +14,12 @@ fn main() {
     let style_sheet = StyleSheet::new(&[
         (
             "red",
-            vec![Styles::Bold],
+            Attributes::Bold,
             Some(Color::Red),
             Some(Color::Yellow),
         ),
-        ("green", vec![Styles::Underline], Some(Color::Green), None),
-        ("blue", vec![Styles::Strikethrough], Some(Color::Blue), None),
+        ("green", Attributes::Underline, Some(Color::Green), None),
+        ("blue", Attributes::Strikethrough, Some(Color::Blue), None),
     ]);
     println_markup!(
         &style_sheet,
