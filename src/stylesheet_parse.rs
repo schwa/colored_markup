@@ -2,26 +2,9 @@ use crate::*;
 use anyhow::Result;
 use nom::{
     branch::alt,
-    bytes::complete::tag,
-    character::complete::{alpha1, alphanumeric0, alphanumeric1, char, multispace0},
-    combinator::recognize,
-    combinator::{map, opt, value},
-    error::ParseError,
-    multi::many0_count,
-    multi::{many0, many1, separated_list0},
-    sequence::pair,
-    sequence::{delimited, tuple},
-    IResult, Parser,
+    bytes::complete::{tag, take_till, take_until}, character::complete::{anychar, alpha1, alphanumeric1, char, multispace0}, combinator::{not,map, opt, recognize, value}, error::ParseError, multi::{many0, many0_count, many1, separated_list0}, sequence::{delimited, pair, tuple}, IResult, Parser
 };
 
-/// A combinator that takes a parser `inner` and produces a parser that also consumes both leading and
-/// trailing whitespace, returning the output of `inner`.
-fn ws<'a, F, O, E: ParseError<&'a str>>(inner: F) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
-where
-    F: Parser<&'a str, O, E>,
-{
-    delimited(multispace0, inner, multispace0)
-}
 
 pub(crate) fn parse(s: &str) -> Result<Vec<(&str, Style)>> {
     let (remaining, rules) = rules(s).or(Err(anyhow::anyhow!("Failed to parse stylesheet")))?;
@@ -203,4 +186,45 @@ fn color(s: &str) -> IResult<&str, Color> {
 #[test]
 fn test_color() {
     assert_eq!(color("red").unwrap().1, Color::Red);
+}
+
+// https://github.com/rust-bakery/nom/blob/main/doc/choosing_a_combinator.md
+
+// fn remove_comments(s: &str) -> IResult<&str, String> {
+//     // parse anything until the first comment
+//     let r = separated_list0(
+//         c_style_comment,
+//         map(not(c_style_comment), |
+//     )(s);
+
+//     fatal
+
+
+// }
+
+// #[test]
+// fn test_remove_comments() {
+//     let r = remove_comments("/* comment */ hello world").unwrap();
+//     assert_eq!(r.1, " hello world");
+// }
+
+
+pub fn c_style_comment(i: &str) -> IResult<&str, ()> {
+    value(
+      (), // Output is thrown away.
+      tuple((
+        tag("(*"),
+        take_until("*)"),
+        tag("*)")
+      ))
+    )(i)
+  }
+
+  /// A combinator that takes a parser `inner` and produces a parser that also consumes both leading and
+/// trailing whitespace, returning the output of `inner`.
+fn ws<'a, F, O, E: ParseError<&'a str>>(inner: F) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
+where
+    F: Parser<&'a str, O, E>,
+{
+    delimited(multispace0, inner, multispace0)
 }

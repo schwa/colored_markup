@@ -19,7 +19,7 @@ impl<'a> Markup<'a> {
             static ref REGEX: Regex = Regex::new(
                 r"(?x)
                 (?P<tag><
-                    (?:(?P<open>[a-z]+)|/(?P<close>[a-z]+))
+                    (?:(?P<open>[a-z][a-z-]*)|/(?P<close>[a-z][a-z-]*))
                 >)"
             )
             .unwrap();
@@ -86,6 +86,20 @@ fn test_parse_markup() {
         Part::OpenTag("em"),
         Part::CloseTag("em"),
         Part::Text("!"),
+    ];
+    assert_eq!(parts, expectation);
+}
+
+#[test]
+fn test_dash_tags() {
+    let markup = Markup::parse("Hello <dash-tag>World</dash-tag>").unwrap();
+    assert!(markup.is_valid());
+    let parts = markup.parts;
+    let expectation = vec![
+        Part::Text("Hello "),
+        Part::OpenTag("dash-tag"),
+        Part::Text("World"),
+        Part::CloseTag("dash-tag"),
     ];
     assert_eq!(parts, expectation);
 }
