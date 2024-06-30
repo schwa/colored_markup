@@ -103,7 +103,7 @@ impl Style {
         background: Option<Color>,
     ) -> Style {
         Style {
-            styles: styles.unwrap_or(Vec::new()),
+            styles: styles.unwrap_or_default(),
             foreground,
             background,
         }
